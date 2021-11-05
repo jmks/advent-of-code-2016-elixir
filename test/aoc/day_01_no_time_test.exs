@@ -12,4 +12,8 @@ defmodule AoC.Day01NoTimeTest do
     assert blocks_away("R2, R2, R2") == 2
     assert blocks_away("R5, L5, R5, R3") == 12
   end
+
+  test "first_visited_twice" do
+    assert first_visited_twice("R8, R4, R4, R8") == 4
+  end
 end

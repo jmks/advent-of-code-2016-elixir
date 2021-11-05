@@ -19,6 +19,14 @@ defmodule AoC.Day01NoTime do
   R5, L5, R5, R3 leaves you 12 blocks away.
 
   How many blocks away is Easter Bunny HQ?
+
+  --- Part Two ---
+
+  Then, you notice the instructions continue on the back of the Recruiting Document. Easter Bunny HQ is actually at the first location you visit twice.
+
+  For example, if your instructions are R8, R4, R4, R8, the first location you visit twice is 4 blocks away, due East.
+
+  How many blocks away is the first location you visit twice?
   """
   def parse_directions(directions) do
     directions
@@ -51,6 +59,15 @@ defmodule AoC.Day01NoTime do
     abs(northward) + abs(eastward)
   end
 
+  def first_visited_twice(directions) do
+    start = {:north, 0, 0}
+    visited = MapSet.new
+
+    {northward, eastward} = do_first_visited_twice(parse_directions(directions), start, visited)
+
+    abs(northward) + abs(eastward)
+  end
+
   defp new_direction(:north, :right), do: :east
   defp new_direction(:north, :left), do: :west
   defp new_direction(:east, :right), do: :south
@@ -64,4 +81,41 @@ defmodule AoC.Day01NoTime do
   defp distance_delta(:east, distance), do: {0, distance}
   defp distance_delta(:south, distance), do: {-distance, 0}
   defp distance_delta(:west, distance), do: {0, -distance}
+
+  # Example: R8, R4, R4, R8
+  #    4
+  #    .
+  #    .
+  #    .
+  # s..x...1
+  #    .   .
+  #    .   .
+  #    .   .
+  #    3...2
+  defp do_first_visited_twice([{dir, distance} | directions], {facing, northward, eastward}, visited) do
+    new_dir = new_direction(facing, dir)
+    {north_delta, east_delta} = distance_delta(new_dir, distance)
+
+    newly_visited = coordinates_travelled({northward, eastward}, {north_delta, east_delta})
+    already_visited = Enum.find(newly_visited, &MapSet.member?(visited, &1))
+
+    if already_visited do
+      already_visited
+    else
+      new_position = {new_dir, northward + north_delta, eastward + east_delta}
+      new_visited = MapSet.union(visited, MapSet.new(newly_visited))
+
+      do_first_visited_twice(directions, new_position, new_visited)
+    end
+  end
+
+  defp coordinates_travelled({north, eastward}, {0, east}) do
+    for i <- (eastward + sign(east))..(eastward + east), do: {north, i}
+  end
+
+  defp coordinates_travelled({northward, east}, {north, 0}) do
+    for i <- (northward + sign(north))..(northward + north), do: {i, east}
+  end
+
+  defp sign(int), do: div(int, abs(int))
 end
