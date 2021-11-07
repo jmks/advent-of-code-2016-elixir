@@ -19,6 +19,7 @@ defmodule Mix.Tasks.Solve do
   defp solve("02", 2, input), do: AoC.Day02BathroomSecurity.bathroom_code(AoC.Day02BathroomSecurity.CrazyKeypad, input)
 
   defp solve("03", 1, input), do: AoC.Day03SquareWithThreeSides.possible_triangles(input)
+  defp solve("03", 2, input), do: AoC.Day03SquareWithThreeSides.possible_vertical_triangles(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
