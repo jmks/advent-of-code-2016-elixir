@@ -21,5 +21,7 @@ defmodule Mix.Tasks.Solve do
   defp solve("03", 1, input), do: AoC.Day03SquareWithThreeSides.possible_triangles(input)
   defp solve("03", 2, input), do: AoC.Day03SquareWithThreeSides.possible_vertical_triangles(input)
 
+  defp solve("04", 1, input), do: AoC.Day04SecurityThroughObscurity.sector_sum_of_valid_rooms(input)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
