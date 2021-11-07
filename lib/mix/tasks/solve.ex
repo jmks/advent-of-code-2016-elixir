@@ -25,5 +25,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(4, 1, input), do: AoC.Day04SecurityThroughObscurity.sector_sum_of_valid_rooms(input)
   defp solve(4, 2, input), do: AoC.Day04SecurityThroughObscurity.find_north_pole(input)
 
+  defp solve(5, 1, input), do: AoC.Day05Chess.password(String.trim(input))
+
   defp solve(_, _, _input), do: "not implemented!"
 end
