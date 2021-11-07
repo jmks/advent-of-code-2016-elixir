@@ -15,6 +15,17 @@ defmodule AoC.Day04SecurityThroughObscurity do
   Of the real rooms from the list above, the sum of their sector IDs is 1514.
 
   What is the sum of the sector IDs of the real rooms?
+
+  --- Part Two ---
+  With all the decoy data out of the way, it's time to decrypt this list and get moving.
+
+  The room names are encrypted by a state-of-the-art shift cipher, which is nearly unbreakable without the right software. However, the information kiosk designers at Easter Bunny HQ were not expecting to deal with a master cryptographer like yourself.
+
+  To decrypt a room name, rotate each letter forward through the alphabet a number of times equal to the room's sector ID. A becomes B, B becomes C, Z becomes A, and so on. Dashes become spaces.
+
+  For example, the real name for qzmt-zixmtkozy-ivhz-343 is very encrypted name.
+
+  What is the sector ID of the room where North Pole objects are stored?
   """
   defmodule EncryptedRoom do
     defstruct [:name, :sector_id, :checksum]
@@ -61,5 +72,37 @@ defmodule AoC.Day04SecurityThroughObscurity do
     |> Enum.filter(&valid_checksum?/1)
     |> Enum.map(& &1.sector_id)
     |> Enum.sum()
+  end
+
+  def rotate_letter("-", times) when rem(times, 2) == 0, do: "-"
+  def rotate_letter("-", _), do: " "
+
+  def rotate_letter(" ", times) when rem(times, 2) == 0, do: " "
+  def rotate_letter(" ", _), do: "-"
+
+  def rotate_letter(letter, times) do
+    letters = String.graphemes("abcdefghijklmnopqrstuvwxyz")
+    index = Enum.find_index(letters, &(&1 == letter))
+    shift = rem(times, 26)
+
+    Enum.at(letters, rem(index + shift, 26))
+  end
+
+  def decrypt_name(%EncryptedRoom{} = room) do
+    room.name
+    |> String.graphemes()
+    |> Enum.map(&rotate_letter(&1, room.sector_id))
+    |> Enum.join("")
+  end
+
+  def find_north_pole(input) do
+    room =
+      input
+      |> String.split("\n", trim: true)
+      |> Enum.map(&EncryptedRoom.new/1)
+      |> Enum.filter(&valid_checksum?/1)
+      |> Enum.find(fn room -> decrypt_name(room) == "northpole-object-storage" end)
+
+    room.sector_id
   end
 end

@@ -29,4 +29,16 @@ defmodule AoC.Day04SecurityThroughObscurityTest do
     totally-real-room-200[decoy]
     """) == 1514
   end
+
+  test "rotate_letter" do
+    assert rotate_letter(" ", 1) == "-"
+    assert rotate_letter("-", 1) == " "
+    assert rotate_letter("a", 1) == "b"
+    assert rotate_letter("z", 1) == "a"
+    assert rotate_letter("a", 26) == "a"
+  end
+
+  test "decrypt_name" do
+    assert decrypt_name(%EncryptedRoom{name: "qzmt-zixmtkozy-ivhz", sector_id: 343}) == "very encrypted name"
+  end
 end

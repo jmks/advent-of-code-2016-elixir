@@ -23,6 +23,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(3, 2, input), do: AoC.Day03SquareWithThreeSides.possible_vertical_triangles(input)
 
   defp solve(4, 1, input), do: AoC.Day04SecurityThroughObscurity.sector_sum_of_valid_rooms(input)
+  defp solve(4, 2, input), do: AoC.Day04SecurityThroughObscurity.find_north_pole(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
