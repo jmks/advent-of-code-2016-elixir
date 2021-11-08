@@ -11,4 +11,11 @@ defmodule AoC.Day07Ipv7Test do
     assert supports_tls?("ioxxoj[asdfgh]zxcvbn")
     refute supports_tls?("ioxxoj[asdfgh]zxcvbn[abba]")
   end
+
+  test "supports_ssl?" do
+    assert supports_ssl?("aba[bab]xyz")
+    refute supports_ssl?("xyx[xyx]xyx")
+    assert supports_ssl?("aaa[kek]eke")
+    assert supports_ssl?("zazbz[bzb]cdb")
+  end
 end

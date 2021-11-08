@@ -13,6 +13,21 @@ defmodule AoC.Day07Ipv7 do
   ioxxoj[asdfgh]zxcvbn supports TLS (oxxo is outside square brackets, even though it's within a larger string).
 
   How many IPs in your puzzle input support TLS?
+
+  --- Part Two ---
+
+  You would also like to know which IPs support SSL (super-secret listening).
+
+  An IP supports SSL if it has an Area-Broadcast Accessor, or ABA, anywhere in the supernet sequences (outside any square bracketed sections), and a corresponding Byte Allocation Block, or BAB, anywhere in the hypernet sequences. An ABA is any three-character sequence which consists of the same character twice with a different character between them, such as xyx or aba. A corresponding BAB is the same characters but in reversed positions: yxy and bab, respectively.
+
+  For example:
+
+  aba[bab]xyz supports SSL (aba outside square brackets with corresponding bab within square brackets).
+  xyx[xyx]xyx does not support SSL (xyx, but no corresponding yxy).
+  aaa[kek]eke supports SSL (eke in supernet with corresponding kek in hypernet; the aaa sequence is not related, because the interior character must be different).
+  zazbz[bzb]cdb supports SSL (zaz has no corresponding aza, but zbz has a corresponding bzb, even though zaz and zbz overlap).
+
+  How many IPs in your puzzle input support SSL?
   """
   def support_tls_count(input) do
     input
@@ -20,17 +35,45 @@ defmodule AoC.Day07Ipv7 do
     |> Enum.count(&supports_tls?/1)
   end
 
-  def supports_tls?(ip) do
-    ip_abba?(ip) and not hypernet_abba?(ip)
+  def support_ssl_count(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.count(&supports_ssl?/1)
   end
 
-  defp ip_abba?(ip) do
+  def supports_tls?(ip) do
+    supernet_abba?(ip) and not hypernet_abba?(ip)
+  end
+
+  def supports_ssl?(ip) do
+    abas = supernet_abas(ip)
+    babs = hypernet_babs(ip)
+
+    not MapSet.disjoint?(
+      MapSet.new(corresponding_babs(abas)),
+      MapSet.new(babs)
+    )
+  end
+
+  defp supernet_abba?(ip) do
     ip
-    |> ip_parts()
+    |> supernet_parts()
     |> Enum.any?(&abba?/1)
   end
 
-  defp ip_parts(ip) do
+  defp supernet_abas(ip) do
+    ip
+    |> supernet_parts()
+    |> Enum.flat_map(&aba/1)
+  end
+
+  defp hypernet_babs(ip) do
+    ip
+    |> hypernet_parts()
+    |> Enum.flat_map(&aba/1)
+  end
+
+  defp supernet_parts(ip) do
     ip
     |> String.replace(~r/\[[a-z]+\]/, "-")
     |> String.split("-")
@@ -46,28 +89,43 @@ defmodule AoC.Day07Ipv7 do
     Regex.scan(~r/\[([a-z]+)\]/, ip) |> Enum.map(&List.last/1)
   end
 
-  defp abba?(string) do
+  defp string_patterns(string, chunk_size, pattern_filter) do
     string
     |> String.graphemes()
-    |> four_letter_chunks()
-    |> Enum.filter(fn
+    |> chunks(chunk_size)
+    |> Enum.filter(pattern_filter)
+  end
+
+  defp abba?(string) do
+    string_patterns(string, 4, fn
       [a, b, b, a] -> a != b
       _ -> false
     end)
-    |> Enum.any?()
+    |> Enum.any?
   end
 
-  defp four_letter_chunks(characters) do
-    do_four_letter_chunks(characters, [])
+  defp aba(string) do
+    string_patterns(string, 3, fn
+      [a, b, a] -> a != b
+      _ -> false
+    end)
   end
 
-  defp do_four_letter_chunks(characters, acc) do
-    chunk = Enum.take(characters, 4)
+  defp chunks(list, size) do
+    do_chunks(list, size, [])
+  end
 
-    if length(chunk) == 4 do
-      do_four_letter_chunks(tl(characters), [chunk | acc])
+  defp do_chunks(characters, size, acc) do
+    chunk = Enum.take(characters, size)
+
+    if length(chunk) == size do
+      do_chunks(tl(characters), size, [chunk | acc])
     else
       acc
     end
+  end
+
+  defp corresponding_babs(abas) do
+    Enum.map(abas, fn [a, b, a] -> [b, a, b] end)
   end
 end

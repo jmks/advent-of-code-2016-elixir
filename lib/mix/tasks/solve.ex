@@ -32,6 +32,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(6, 2, input), do: AoC.Day06SignalsAndNoise.original_message(input)
 
   defp solve(7, 1, input), do: AoC.Day07Ipv7.support_tls_count(input)
+  defp solve(7, 2, input), do: AoC.Day07Ipv7.support_ssl_count(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
