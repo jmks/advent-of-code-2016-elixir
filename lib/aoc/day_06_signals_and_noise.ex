@@ -31,16 +31,34 @@ defmodule AoC.Day06SignalsAndNoise do
 
   def error_correcting_code(input) do
     input
-    |> String.split("\n", trim: true)
-    |> Enum.map(&String.graphemes/1)
-    |> Enum.zip()
-    |> Enum.map(&Enum.frequencies(Tuple.to_list(&1)))
+    |> character_frequencies()
     |> Enum.map(&most_frequent_character/1)
     |> Enum.join("")
   end
 
+  def original_message(input) do
+    input
+    |> character_frequencies()
+    |> Enum.map(&least_frequent_character/1)
+    |> Enum.join("")
+  end
+
+  defp character_frequencies(input) do
+    input
+    |> String.split("\n", trim: true)
+    |> Enum.map(&String.graphemes/1)
+    |> Enum.zip()
+    |> Enum.map(&Enum.frequencies(Tuple.to_list(&1)))
+  end
+
   defp most_frequent_character(frequencies) do
     {char, _count} = Enum.max_by(frequencies, fn {_char, count} -> count end)
+
+    char
+  end
+
+  defp least_frequent_character(frequencies) do
+    {char, _count} = Enum.min_by(frequencies, fn {_char, count} -> count end)
 
     char
   end

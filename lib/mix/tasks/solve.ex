@@ -29,6 +29,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(5, 2, input), do: AoC.Day05Chess.complex_password(String.trim(input))
 
   defp solve(6, 1, input), do: AoC.Day06SignalsAndNoise.error_correcting_code(input)
+  defp solve(6, 2, input), do: AoC.Day06SignalsAndNoise.original_message(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end

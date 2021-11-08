@@ -25,4 +25,8 @@ defmodule AoC.Day06SignalsAndNoiseTest do
   test "error_correcting_code" do
     assert error_correcting_code(@example) == "easter"
   end
+
+  test "original_message" do
+    assert original_message(@example) == "advent"
+  end
 end
