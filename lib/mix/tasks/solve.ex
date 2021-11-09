@@ -34,9 +34,10 @@ defmodule Mix.Tasks.Solve do
   defp solve(7, 1, input), do: AoC.Day07Ipv7.support_tls_count(input)
   defp solve(7, 2, input), do: AoC.Day07Ipv7.support_ssl_count(input)
 
-  # Not: 102
   defp solve(8, 1, input), do: AoC.Day08TwoFactor.pixels_on(input)
   defp solve(8, 2, input), do: AoC.Day08TwoFactor.display(input)
+
+  defp solve(9, 1, input), do: AoC.Day09Explosives.decompress(input) |> String.length()
 
   defp solve(_, _, _input), do: "not implemented!"
 end
