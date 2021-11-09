@@ -36,6 +36,7 @@ defmodule Mix.Tasks.Solve do
 
   # Not: 102
   defp solve(8, 1, input), do: AoC.Day08TwoFactor.pixels_on(input)
+  defp solve(8, 2, input), do: AoC.Day08TwoFactor.display(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
