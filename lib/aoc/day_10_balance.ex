@@ -26,6 +26,10 @@ defmodule AoC.Day10Balance do
   In the end, output bin 0 contains a value-5 microchip, output bin 1 contains a value-2 microchip, and output bin 2 contains a value-3 microchip. In this configuration, bot number 2 is responsible for comparing value-5 microchips with value-2 microchips.
 
   Based on your instructions, what is the number of the bot that is responsible for comparing value-61 microchips with value-17 microchips?
+
+  --- Part Two ---
+
+  What do you get if you multiply together the values of one chip in each of outputs 0, 1, and 2?
   """
   defmodule Parser do
     import NimbleParsec
@@ -65,32 +69,53 @@ defmodule AoC.Day10Balance do
   end
 
   def who_compares(input, low_chip, high_chip) do
-    {starting, mappings} =
-      input
-      |> parse_instructions
-      |> Enum.split_with(fn
-        {:assign_chip, _, _} -> true
-        {:give_chip, _, _, _} -> false
-      end)
+    {starting, mappings} = split_instructions(input)
+    bots = initialize_bots(mappings)
+    {bot, _outputs} = do_who_compares(starting, [low_chip, high_chip], %{}, bots)
 
-    bots = Enum.reduce(mappings, %{}, fn {:give_chip, bot, low_dest, high_dest}, acc ->
+    bot
+  end
+
+  def multiply_outputs(input, target_outputs) do
+    {starting, mappings} = split_instructions(input)
+    bots = initialize_bots(mappings)
+    {_bot, outputs} = do_who_compares(starting, nil, %{}, bots)
+
+    target_outputs
+    |> Enum.map(fn output -> Map.fetch!(outputs, output) end)
+    |> Enum.reduce(1, &Kernel.*/2)
+  end
+
+  defp initialize_bots(mappings) do
+    Enum.reduce(mappings, %{}, fn {:give_chip, bot, low_dest, high_dest}, acc ->
       Map.put_new(acc, bot, {low_dest, high_dest, []})
     end)
-
-    do_who_compares(starting, [low_chip, high_chip], bots)
   end
 
-  defp do_who_compares([{:assign_chip, _chip, {:output, _output}} | rest], target_chips, bots) do
-    do_who_compares(rest, target_chips, bots)
+  defp split_instructions(input) do
+    input
+    |> parse_instructions
+    |> Enum.split_with(fn
+      {:assign_chip, _, _} -> true
+      {:give_chip, _, _, _} -> false
+    end)
   end
 
-  defp do_who_compares([{:assign_chip, chip, {:bot, bot}} | rest], target_chips, bots) do
+  defp do_who_compares([], _target, outputs, _bots), do: {nil, outputs}
+
+  defp do_who_compares([{:assign_chip, chip, {:output, output}} | rest], target_chips, outputs, bots) do
+    new_outputs = Map.put(outputs, output, chip)
+
+    do_who_compares(rest, target_chips, new_outputs, bots)
+  end
+
+  defp do_who_compares([{:assign_chip, chip, {:bot, bot}} | rest], target_chips, outputs, bots) do
    {low_dest, high_dest, chips}  = Map.fetch!(bots, bot)
     new_chips = Enum.sort([chip | chips], :asc)
 
     cond do
       length(new_chips) == 2 and new_chips == target_chips ->
-        bot
+        {bot, outputs}
 
       length(new_chips) == 2 ->
         [low_chip, high_chip] = new_chips
@@ -100,12 +125,12 @@ defmodule AoC.Day10Balance do
         ]
         new_bots = Map.put(bots, bot, {low_dest, high_dest, []})
 
-        do_who_compares(new_assignments ++ rest, target_chips, new_bots)
+        do_who_compares(new_assignments ++ rest, target_chips, outputs, new_bots)
 
       true ->
         new_bots = Map.put(bots, bot, {low_dest, high_dest, new_chips})
 
-        do_who_compares(rest, target_chips, new_bots)
+        do_who_compares(rest, target_chips, outputs, new_bots)
     end
   end
 

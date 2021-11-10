@@ -2,7 +2,6 @@ defmodule AoC.Day10Test do
   use ExUnit.Case
 
   import AoC.Day10Balance
-  alias AoC.Day10Balance.Bot
 
   @example_input """
   value 5 goes to bot 2
