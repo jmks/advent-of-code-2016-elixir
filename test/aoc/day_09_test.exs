@@ -1,4 +1,4 @@
-defmodule AoC.Day08Test do
+defmodule AoC.Day09Test do
   use ExUnit.Case
 
   import AoC.Day09Explosives

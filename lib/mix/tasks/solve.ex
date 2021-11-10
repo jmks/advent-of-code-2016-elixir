@@ -43,5 +43,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(9, 1, input), do: AoC.Day09Explosives.decompress(input) |> String.length()
   defp solve(9, 2, input), do: AoC.Day09Explosives.decompressed_length(:v2, input)
 
+  defp solve(10, 1, input), do: AoC.Day10Balance.who_compares(input, 17, 61)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
