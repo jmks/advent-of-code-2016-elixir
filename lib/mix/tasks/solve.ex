@@ -47,6 +47,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(10, 2, input), do: AoC.Day10Balance.multiply_outputs(input, [0, 1, 2])
 
   defp solve(12, 1, input), do: AoC.Day12Leonardo.register_value_after(input, :a)
+  defp solve(12, 2, input), do: AoC.Day12Leonardo.register_value_after(input, :a, c: 1)
 
   defp solve(_, _, _input), do: "not implemented!"
 end

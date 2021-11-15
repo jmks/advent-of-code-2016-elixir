@@ -30,17 +30,30 @@ defmodule AoC.Day12Leonardo do
   The above code would set register a to 41, increase its value by 2, decrease its value by 1, and then skip the last dec a (because a is not zero, so the jnz a 2 skips it), leaving register a at 42. When you move past the last instruction, the program halts.
 
   After executing the assembunny code in your puzzle input, what value is left in register a?
+
+  --- Part Two ---
+
+  As you head down the fire escape to the monorail, you notice it didn't start; register c needs to be initialized to the position of the ignition key.
+
+  If you instead initialize register c to be 1, what value is now left in register a?
   """
   defmodule Assembunny do
     defstruct [:instructions, :pc, :a, :b, :c, :d]
 
-    def parse(text) do
+    def parse(text, init \\ []) do
       instructions =
         text
         |> String.split("\n", trim: true)
         |> Enum.map(&parse_instruction/1)
 
-      %__MODULE__{instructions: instructions, pc: 0, a: 0, b: 0, c: 0, d: 0}
+      %__MODULE__{
+        instructions: instructions,
+        pc: 0,
+        a: Keyword.get(init, :a, 0),
+        b: Keyword.get(init, :b, 0),
+        c: Keyword.get(init, :c, 0),
+        d: Keyword.get(init, :d, 0)
+      }
     end
 
     def run(ab), do: do_run(ab)
@@ -114,9 +127,9 @@ defmodule AoC.Day12Leonardo do
     end
   end
 
-  def register_value_after(input, register) do
+  def register_value_after(input, register, opts \\ []) do
     input
-    |> Assembunny.parse
+    |> Assembunny.parse(opts)
     |> Assembunny.run
     |> Map.get(register)
   end
