@@ -43,10 +43,14 @@ defmodule AoC.Day13Maze do
     defstruct [:squares, :fav_number]
 
     def new(favourite_number) do
-      %__MODULE__{
+      maze = %__MODULE__{
         squares: %{},
         fav_number: favourite_number
       }
+
+      {:ok, pid} = Agent.start_link(fn -> maze end)
+
+      pid
     end
 
     def open_adjacent_squares(maze, coordinate) do
@@ -87,32 +91,35 @@ defmodule AoC.Day13Maze do
       |> Enum.filter(fn {x, y} -> x >= 0 and y >= 0 end)
     end
 
-    # TODO: Since the maze is locally-defined (only depends on coordatines),
-    # it would be more efficient to share the same map across all searches
     defp calculate_open_coordinates(maze, coordinates) do
       do_calculate_open_coordinates(maze, coordinates, [])
     end
 
-    defp do_calculate_open_coordinates(maze, [], open), do: {maze, open}
+    defp do_calculate_open_coordinates(_maze, [], open), do: open
 
     defp do_calculate_open_coordinates(maze, [coordinate | coordinates], open) do
+      {squares, fav_number} = Agent.get(maze, &{&1.squares, &1.fav_number})
+
       cond do
-        Map.get(maze.squares, coordinate, false) ->
+        Map.get(squares, coordinate, false) ->
           do_calculate_open_coordinates(maze, coordinates, [coordinate | open])
 
-        Map.has_key?(maze.squares, coordinate) ->
+        Map.has_key?(squares, coordinate) ->
           do_calculate_open_coordinates(maze, coordinates, open)
 
         true ->
-          new_squares = Map.put_new(maze.squares, coordinate, open?(coordinate, maze.fav_number))
-          new_maze = struct!(maze, squares: new_squares)
+          new_squares = Map.put_new(squares, coordinate, open?(coordinate, fav_number))
 
-          do_calculate_open_coordinates(new_maze, [coordinate | coordinates], open)
+          Agent.update(maze, fn state ->
+            struct!(state, squares: new_squares)
+          end)
+
+          do_calculate_open_coordinates(maze, [coordinate | coordinates], open)
       end
     end
 
     defp open?({x, y}, favourite_number) do
-      number = x*x + 3*x + 2*x*y + y + y*y + favourite_number
+      number = x * x + 3 * x + 2 * x * y + y + y * y + favourite_number
 
       ones =
         number
@@ -131,7 +138,7 @@ defmodule AoC.Day13Maze do
   end
 
   def shortest_path(maze, start_coordinate, destination_coordinate) do
-    state = {maze, start_coordinate, destination_coordinate, MapSet.new}
+    state = {maze, start_coordinate, destination_coordinate, MapSet.new()}
 
     do_shortest_path([state])
   end
@@ -143,12 +150,14 @@ defmodule AoC.Day13Maze do
   end
 
   defp do_shortest_path([{maze, current, destination, history} | rest]) do
-    {new_maze, adjacent} = Maze.open_adjacent_squares(maze, current)
+    adjacent = Maze.open_adjacent_squares(maze, current)
 
     new_states =
       adjacent
       |> Enum.filter(fn coordinate -> not MapSet.member?(history, coordinate) end)
-      |> Enum.map(fn coordinate -> {new_maze, coordinate, destination, MapSet.put(history, current)} end)
+      |> Enum.map(fn coordinate ->
+        {maze, coordinate, destination, MapSet.put(history, current)}
+      end)
 
     do_shortest_path(rest ++ new_states)
   end
