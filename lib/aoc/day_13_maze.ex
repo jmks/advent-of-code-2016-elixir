@@ -54,6 +54,29 @@ defmodule AoC.Day13Maze do
       calculate_open_coordinates(maze, neighbours)
     end
 
+    def print(maze, visited \\ MapSet.new()) do
+      max_x = Enum.max_by(maze.squares, fn {{x, _y}, _} -> x end) |> elem(0) |> elem(0)
+      max_y = Enum.max_by(maze.squares, fn {{_x, y}, _} -> y end) |> elem(0) |> elem(1)
+      max_y_digits = max_y |> Integer.to_string() |> String.length()
+
+      grid =
+        for y <- 0..max_y do
+          row =
+            for x <- 0..max_x do
+              case Map.get(maze.squares, {x, y}) do
+                nil -> "?"
+                false -> "#"
+                true -> if MapSet.member?(visited, {x, y}), do: "v", else: "."
+              end
+            end
+
+          Enum.join([String.pad_leading(to_string(y), max_y_digits, "0"), " " | row], "")
+        end
+
+      [[" ", " " | Enum.into(0..max_x, []) |> Enum.map(&Integer.to_string/1)] | grid]
+      |> Enum.join("\n")
+    end
+
     defp adjancent_squares({x, y}) do
       [
         {x - 1, y},
@@ -98,6 +121,12 @@ defmodule AoC.Day13Maze do
         |> Enum.count(fn digit -> digit == "1" end)
 
       rem(ones, 2) == 0
+    end
+  end
+
+  defimpl Inspect, for: Maze do
+    def inspect(maze, _opts) do
+      Maze.print(maze)
     end
   end
 
