@@ -51,5 +51,7 @@ defmodule Mix.Tasks.Solve do
 
   defp solve(13, 1, input), do: AoC.Day13Maze.shortest_path(AoC.Day13Maze.Maze.new(String.to_integer(input)), {1, 1}, {31, 39})
 
+  defp solve(14, 1, input), do: AoC.Day14OTP.nth_key_index(input, 64)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
