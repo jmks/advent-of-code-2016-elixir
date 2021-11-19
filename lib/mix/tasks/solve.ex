@@ -50,6 +50,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(12, 2, input), do: AoC.Day12Leonardo.register_value_after(input, :a, c: 1)
 
   defp solve(13, 1, input), do: AoC.Day13Maze.shortest_path(AoC.Day13Maze.Maze.new(String.to_integer(input)), {1, 1}, {31, 39})
+  defp solve(13, 2, input), do: AoC.Day13Maze.total_coordinates_reachable(AoC.Day13Maze.Maze.new(String.to_integer(input)), {1, 1}, 50)
 
   defp solve(14, 1, input), do: AoC.Day14OTP.nth_key_index(input, 64)
   defp solve(14, 2, input), do: AoC.Day14OTP.nth_key_index(input, 64, 2016)

@@ -118,7 +118,7 @@ defmodule AoC.Day13Maze do
       end
     end
 
-    defp open?({x, y}, favourite_number) do
+    def open?({x, y}, favourite_number) do
       number = x * x + 3 * x + 2 * x * y + y + y * y + favourite_number
 
       ones =
@@ -137,26 +137,64 @@ defmodule AoC.Day13Maze do
     end
   end
 
-  def shortest_path(maze, start_coordinate, destination_coordinate) do
-    state = {maze, start_coordinate, destination_coordinate, MapSet.new()}
+  def shortest_path(maze, start_coordinate, destination_coordinate, max_steps \\ :infinity) do
+    state = {maze, start_coordinate, destination_coordinate, max_steps, MapSet.new()}
 
-    do_shortest_path([state])
+    do_shortest_path([state]) |> MapSet.size()
   end
 
-  defp do_shortest_path([]), do: raise("No solution!")
+  def total_coordinates_reachable(maze, {xo, yo} = start, steps) do
+    {:ok, visited_pid} = Agent.start_link(fn -> MapSet.new() end)
+    fav_number = Agent.get(maze, &(&1.fav_number))
+    coordinates = for x <- 0..51, y <- 0..51, abs(xo - x) + abs(yo - y) <= steps, do: {x, y}
+    coordinates = Enum.shuffle(coordinates)
 
-  defp do_shortest_path([{_maze, destination, destination, history} | _rest]) do
-    MapSet.size(history)
+    Enum.count(coordinates, fn coordinate ->
+      visited = Agent.get(visited_pid, & &1)
+
+      cond do
+        MapSet.member?(visited, coordinate) ->
+          true
+
+        not Maze.open?(coordinate, fav_number) ->
+          false
+
+        true ->
+          state = {maze, start, coordinate, steps, MapSet.new()}
+
+          case do_shortest_path([state]) do
+            nil ->
+              false
+
+            coordinates ->
+              Agent.update(visited_pid, fn state -> MapSet.union(state, coordinates) end)
+
+              true
+          end
+      end
+    end)
   end
 
-  defp do_shortest_path([{maze, current, destination, history} | rest]) do
+  defp do_shortest_path([]), do: nil
+
+  defp do_shortest_path([{_maze, destination, destination, _max, history} | _rest]) do
+    history
+  end
+
+  defp do_shortest_path([{_maze, _current, _destination, 0, _history} | _rest]), do: nil
+
+  defp do_shortest_path([{maze, current, destination, max, history} | rest]) do
     adjacent = Maze.open_adjacent_squares(maze, current)
+    new_max = case max do
+                :infinity -> :infinity
+                n -> n - 1
+              end
 
     new_states =
       adjacent
       |> Enum.filter(fn coordinate -> not MapSet.member?(history, coordinate) end)
       |> Enum.map(fn coordinate ->
-        {maze, coordinate, destination, MapSet.put(history, current)}
+        {maze, coordinate, destination, new_max, MapSet.put(history, current)}
       end)
 
     do_shortest_path(rest ++ new_states)
