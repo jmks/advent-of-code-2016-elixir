@@ -55,5 +55,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(14, 1, input), do: AoC.Day14OTP.nth_key_index(input, 64)
   defp solve(14, 2, input), do: AoC.Day14OTP.nth_key_index(input, 64, 2016)
 
+  defp solve(15, 1, input), do: AoC.Day15Timing.earliest_fall_through(input)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
