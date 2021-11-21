@@ -45,6 +45,10 @@ defmodule AoC.Day16Dragon do
   In this example, the correct checksum would therefore be 01100.
 
   The first disk you have to fill has length 272. Using the initial state in your puzzle input, what is the correct checksum?
+
+  --- Part Two ---
+
+  The second disk you have to fill has length 35651584. Again using the initial state in your puzzle input, what is the correct checksum for this disk?
   """
   def fill(start, length) do
     if String.length(start) >= length do

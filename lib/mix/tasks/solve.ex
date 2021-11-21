@@ -59,6 +59,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(15, 2, input), do: AoC.Day15Timing.earliest_fall_through(input, :part_2)
 
   defp solve(16, 1, input), do: AoC.Day16Dragon.fill(input, 272) |> elem(1)
+  defp solve(16, 2, input), do: AoC.Day16Dragon.fill(input, 35651584) |> elem(1)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
