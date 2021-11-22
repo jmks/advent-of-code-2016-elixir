@@ -62,6 +62,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(16, 2, input), do: AoC.Day16Dragon.fill(input, 35651584) |> elem(1)
 
   defp solve(17, 1, input), do: AoC.Day17TwoSteps.shortest_path(input)
+  defp solve(17, 2, input), do: AoC.Day17TwoSteps.longest_path(input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end

@@ -12,4 +12,10 @@ defmodule AoC.Day17Test do
     assert shortest_path("kglvqrro") == "DDUDRLRRUDRD"
     assert shortest_path("ulqzkmiv") == "DRURDRUDDLLDLUURRDULRLDUUDDDRR"
   end
+
+  test "longest_path" do
+    assert longest_path("ihgpwlah") == 370
+    assert longest_path("kglvqrro") == 492
+    assert longest_path("ulqzkmiv") == 830
+  end
 end

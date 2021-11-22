@@ -34,6 +34,18 @@ defmodule AoC.Day17TwoSteps do
   With ulqzkmiv, the shortest would be DRURDRUDDLLDLUURRDULRLDUUDDDRR.
 
   Given your vault's passcode, what is the shortest path (the actual path, not just the length) to reach the vault?
+
+  --- Part Two ---
+
+  You're curious how robust this security solution really is, and so you decide to find longer and longer paths which still provide access to the vault. You remember that paths always end the first time they reach the bottom-right room (that is, they can never pass through it, only end in it).
+
+  For example:
+
+  If your passcode were ihgpwlah, the longest path would take 370 steps.
+  With kglvqrro, the longest path would be 492 steps long.
+  With ulqzkmiv, the longest path would be 830 steps long.
+
+  What is the length of the longest path that reaches the vault?
   """
   defmodule Map do
     defstruct [:position]
@@ -75,6 +87,14 @@ defmodule AoC.Day17TwoSteps do
     do_shortest_path([state])
   end
 
+  def longest_path(passcode) do
+    map = Map.new({1, 1})
+
+    state = {map, passcode, []}
+
+    do_longest_path([state], 0)
+  end
+
   def door_states(passcode, path) do
     passcode <> Enum.join(path, "")
     |> md5()
@@ -103,8 +123,6 @@ defmodule AoC.Day17TwoSteps do
     end
   end
 
-  defp do_shortest_path([]), do: raise("Out of states!")
-
   defp do_shortest_path([{map, code, history} | states]) do
     if Map.exit?(map) do
       history |> Enum.reverse() |> Enum.join("")
@@ -116,6 +134,22 @@ defmodule AoC.Day17TwoSteps do
         |> Enum.map(fn door -> {Map.move(map, door), code, [door_path(door) | history]} end)
 
       do_shortest_path(states ++ new_states)
+    end
+  end
+
+  defp do_longest_path([], longest), do: longest
+
+  defp do_longest_path([{map, code, history} | states], longest) do
+    if Map.exit?(map) do
+      do_longest_path(states, Enum.max([longest, length(history)]))
+    else
+      new_states =
+        map
+        |> Map.doors()
+        |> Enum.filter(&door_open?(code, Enum.reverse(history), &1))
+        |> Enum.map(fn door -> {Map.move(map, door), code, [door_path(door) | history]} end)
+
+      do_longest_path(states ++ new_states, longest)
     end
   end
 
