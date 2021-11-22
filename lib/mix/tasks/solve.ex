@@ -64,5 +64,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(17, 1, input), do: AoC.Day17TwoSteps.shortest_path(input)
   defp solve(17, 2, input), do: AoC.Day17TwoSteps.longest_path(input)
 
+  defp solve(18, 1, input), do: AoC.Day18Rouge.safe_tiles_count(input, 40)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
