@@ -2,14 +2,48 @@ defmodule AoC.Day19Test do
   use ExUnit.Case
 
   import AoC.Day19Elephant
+  alias AoC.Day19Elephant.Zipper
 
-  test "winner_stealing_from_the_left" do
-    assert winner_stealing_from_the_left(1) == 1
-    assert winner_stealing_from_the_left(2) == 1
-    assert winner_stealing_from_the_left(3) == 3
-    assert winner_stealing_from_the_left(4) == 1
-    assert winner_stealing_from_the_left(5) == 3
-    assert winner_stealing_from_the_left(6) == 5
-    assert winner_stealing_from_the_left(7) == 7
+  describe "Zipper" do
+    import Zipper
+
+    test "cycle through elements" do
+      z = new([1,2,3])
+      assert current(z) == 1
+
+      z = forward(z)
+      assert current(z) == 2
+
+      z = forward(z)
+      assert current(z) == 3
+
+      z = forward(z)
+      assert current(z) == 1
+    end
+
+    test "removes elements" do
+      z = new([1,2,3]) |> forward() |> delete()
+
+      assert current(z) == 3
+
+      z = forward(z)
+      assert current(z) == 1
+    end
+
+    test "removes the last element" do
+      z = new([1,2,3]) |> forward() |> forward() |> delete()
+
+      assert current(z)
+    end
+  end
+
+  test "winner :steal_left" do
+    assert winner(1, :steal_left) == 1
+    assert winner(2, :steal_left) == 1
+    assert winner(3, :steal_left) == 3
+    assert winner(4, :steal_left) == 1
+    assert winner(5, :steal_left) == 3
+    assert winner(6, :steal_left) == 5
+    assert winner(7, :steal_left) == 7
   end
 end

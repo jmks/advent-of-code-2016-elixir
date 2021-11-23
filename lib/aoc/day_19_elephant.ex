@@ -8,9 +8,9 @@ defmodule AoC.Day19Elephant do
 
   For example, with five Elves (numbered 1 to 5):
 
-    1
+  1
   5   2
-   4 3
+  4 3
 
   Elf 1 takes Elf 2's present.
   Elf 2 has no presents and is skipped.
@@ -33,16 +33,16 @@ defmodule AoC.Day19Elephant do
   For example, with five Elves (again numbered 1 to 5):
 
   The Elves sit in a circle; Elf 1 goes first:
-    1
+  1
   5   2
-   4 3
+  4 3
   Elves 3 and 4 are across the circle; Elf 3's present is stolen, being the one to the left. Elf 3 leaves the circle, and the rest of the Elves move in:
-    1           1
+  1           1
   5   2  -->  5   2
-   4 -          4
+  4 -          4
   Elf 2 steals from the Elf directly across the circle, Elf 5:
   1           1
-  -   2  -->     2
+  -   2  -->      2
   4           4
   Next is Elf 4 who, choosing between Elves 1 and 2, steals from Elf 1:
   -          2
@@ -56,46 +56,35 @@ defmodule AoC.Day19Elephant do
 
   With the number of Elves given in your puzzle input, which Elf now gets all the presents?
   """
-  def winner_stealing_from_the_left(1), do: 1
-  def winner_stealing_from_the_left(2), do: 1
-
-  def winner_stealing_from_the_left(total_elves) do
-    # The first round always wipes out the even numbers
-    starting = for i <- 1..total_elves, not even?(i) do
-      {i, 2}
-    end
-    # If there's an even number, all evens are gone;
-    # but if odd, the last number steals from 1
-    starting = if even?(total_elves) do
-      starting
-    else
-      tl(starting)
+  defmodule Zipper do
+    def new(list) do
+      {[], list}
     end
 
-    do_winner(starting, [])
+    def current({_, [h | _]}), do: h
+
+    def delete({previous, [_]}), do: {[], Enum.reverse(previous)}
+
+    def delete({previous, [_ | next]}), do: {previous, next}
+
+    def forward({prev, [h]}), do: {[], Enum.reverse([h | prev])}
+
+    def forward({prev, [h | next]}), do: {[h | prev], next}
   end
 
-  def do_winner([{elf, _count}], []), do: elf
-  def do_winner([], [{elf, _count}]), do: elf
+  def winner(total_elves, :steal_left) do
+    zip =
+      1..total_elves
+      |> Enum.into([])
+      |> Zipper.new()
 
-  def do_winner([], acc) do
-    do_winner(Enum.reverse(acc), [])
+    do_winner(zip, :steal_left)
   end
 
-  def do_winner([{elf, presents}], acc) do
-    new_elves = Enum.reverse(acc)
+  defp do_winner({[elf], []}, _), do: elf
+  defp do_winner({[], [elf]}, _), do: elf
 
-    do_winner([{elf, presents} | new_elves], [])
-  end
-
-  def do_winner([{elf, presents} | elves], acc) do
-    index = Enum.find_index(elves, fn {_, count} -> count > 0 end)
-    new_elves = List.delete_at(elves, index)
-
-    do_winner(new_elves, [{elf, presents} | acc])
-  end
-
-  defp even?(number) do
-    rem(number, 2) == 0
+  defp do_winner(zip, :steal_left) do
+    zip |> Zipper.forward() |> Zipper.delete() |> do_winner(:steal_left)
   end
 end
