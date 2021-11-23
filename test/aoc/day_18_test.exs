@@ -1,4 +1,4 @@
-defmodule AoC.Day17Test do
+defmodule AoC.Day18Test do
   use ExUnit.Case
 
   import AoC.Day18Rouge
