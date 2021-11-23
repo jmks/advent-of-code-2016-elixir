@@ -67,7 +67,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(18, 1, input), do: AoC.Day18Rouge.safe_tiles_count(input, 40)
   defp solve(18, 2, input), do: AoC.Day18Rouge.safe_tiles_count(input, 400_000)
 
-  defp solve(19, 1, input), do: AoC.Day19Elephant.winner(String.to_integer(input))
+  defp solve(19, 1, input), do: AoC.Day19Elephant.winner_stealing_from_the_left(String.to_integer(input))
 
   defp solve(_, _, _input), do: "not implemented!"
 end

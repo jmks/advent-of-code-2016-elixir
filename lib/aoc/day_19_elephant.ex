@@ -25,11 +25,41 @@ defmodule AoC.Day19Elephant do
   So, with five Elves, the Elf that sits starting in position 3 gets all the presents.
 
   With the number of Elves given in your puzzle input, which Elf gets all the presents?
-  """
-  def winner(1), do: 1
-  def winner(2), do: 1
 
-  def winner(total_elves) do
+  --- Part Two ---
+
+  Realizing the folly of their present-exchange rules, the Elves agree to instead steal presents from the Elf directly across the circle. If two Elves are across the circle, the one on the left (from the perspective of the stealer) is stolen from. The other rules remain unchanged: Elves with no presents are removed from the circle entirely, and the other elves move in slightly to keep the circle evenly spaced.
+
+  For example, with five Elves (again numbered 1 to 5):
+
+  The Elves sit in a circle; Elf 1 goes first:
+    1
+  5   2
+   4 3
+  Elves 3 and 4 are across the circle; Elf 3's present is stolen, being the one to the left. Elf 3 leaves the circle, and the rest of the Elves move in:
+    1           1
+  5   2  -->  5   2
+   4 -          4
+  Elf 2 steals from the Elf directly across the circle, Elf 5:
+  1           1
+  -   2  -->     2
+  4           4
+  Next is Elf 4 who, choosing between Elves 1 and 2, steals from Elf 1:
+  -          2
+  2  -->
+  4          4
+  Finally, Elf 2 steals from Elf 4:
+  2
+  -->  2
+  -
+  So, with five Elves, the Elf that sits starting in position 2 gets all the presents.
+
+  With the number of Elves given in your puzzle input, which Elf now gets all the presents?
+  """
+  def winner_stealing_from_the_left(1), do: 1
+  def winner_stealing_from_the_left(2), do: 1
+
+  def winner_stealing_from_the_left(total_elves) do
     # The first round always wipes out the even numbers
     starting = for i <- 1..total_elves, not even?(i) do
       {i, 2}
@@ -48,7 +78,6 @@ defmodule AoC.Day19Elephant do
   def do_winner([{elf, _count}], []), do: elf
   def do_winner([], [{elf, _count}]), do: elf
 
-
   def do_winner([], acc) do
     do_winner(Enum.reverse(acc), [])
   end
@@ -61,9 +90,7 @@ defmodule AoC.Day19Elephant do
 
   def do_winner([{elf, presents} | elves], acc) do
     index = Enum.find_index(elves, fn {_, count} -> count > 0 end)
-    # {_elf, _presents} = Enum.at(elves, index)
     new_elves = List.delete_at(elves, index)
-    # TODO: add presents together?
 
     do_winner(new_elves, [{elf, presents} | acc])
   end

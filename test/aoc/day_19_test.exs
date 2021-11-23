@@ -3,13 +3,13 @@ defmodule AoC.Day19Test do
 
   import AoC.Day19Elephant
 
-  test "winner" do
-    assert winner(1) == 1
-    assert winner(2) == 1
-    assert winner(3) == 3
-    assert winner(4) == 1
-    assert winner(5) == 3
-    assert winner(6) == 5
-    assert winner(7) == 7
+  test "winner_stealing_from_the_left" do
+    assert winner_stealing_from_the_left(1) == 1
+    assert winner_stealing_from_the_left(2) == 1
+    assert winner_stealing_from_the_left(3) == 3
+    assert winner_stealing_from_the_left(4) == 1
+    assert winner_stealing_from_the_left(5) == 3
+    assert winner_stealing_from_the_left(6) == 5
+    assert winner_stealing_from_the_left(7) == 7
   end
 end
