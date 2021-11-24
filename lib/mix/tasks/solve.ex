@@ -69,5 +69,7 @@ defmodule Mix.Tasks.Solve do
 
   defp solve(19, 1, input), do: AoC.Day19Elephant.winner(String.to_integer(input), :steal_left)
 
+  defp solve(20, 1, input), do: AoC.Day20Firewall.lowest_allowed(input)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
