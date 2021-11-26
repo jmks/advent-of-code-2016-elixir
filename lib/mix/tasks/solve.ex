@@ -75,5 +75,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(21, 1, input), do: AoC.Day21Scramble.scramble_string("abcdefgh", input)
   defp solve(21, 2, input), do: AoC.Day21Scramble.unscramble_string("fbgdceah", input)
 
+  defp solve(22, 1, input), do: AoC.Day22Grid.count_viable_pairs(input)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
