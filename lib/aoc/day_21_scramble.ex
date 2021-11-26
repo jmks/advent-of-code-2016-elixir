@@ -27,12 +27,25 @@ defmodule AoC.Day21Scramble do
   After these steps, the resulting scrambled password is decab.
 
   Now, you just need to generate a new scrambled password and you can access the system. Given the list of scrambling operations in your puzzle input, what is the result of scrambling abcdefgh?
+
+  --- Part Two ---
+
+  You scrambled the password correctly, but you discover that you can't actually modify the password file on the system. You'll need to un-scramble one of the existing passwords by reversing the scrambling process.
+
+  What is the un-scrambled version of the scrambled password fbgdceah?
   """
   def scramble_string(start, instructions) do
     instructions
-    |> String.split("\n", trim: true)
-    |> Enum.map(&parse/1)
+    |> parse_instructions()
     |> Enum.reduce(String.graphemes(start), &scramble/2)
+    |> Enum.join("")
+  end
+
+  def unscramble_string(scrambled, instructions) do
+    instructions
+    |> parse_instructions()
+    |> Enum.reverse()
+    |> Enum.reduce(String.graphemes(scrambled), &unscramble/2)
     |> Enum.join("")
   end
 
@@ -87,6 +100,12 @@ defmodule AoC.Day21Scramble do
     |> List.insert_at(to, char)
   end
 
+  defp parse_instructions(instructions) do
+    instructions
+    |> String.split("\n", trim: true)
+    |> Enum.map(&parse/1)
+  end
+
   defp parse("swap position" <> rest) do
     [one, two] = next_integers(rest)
 
@@ -127,7 +146,7 @@ defmodule AoC.Day21Scramble do
     |> Enum.map(&String.to_integer/1)
   end
 
-  defp rotate(direction, list, times \\ 1)
+  defp rotate(direction, list, times)
 
   defp rotate(_, list, 0), do: list
 
@@ -139,5 +158,46 @@ defmodule AoC.Day21Scramble do
 
   defp rotate(:left, [h | t], times) do
     rotate(:left, t ++ [h], times - 1)
+  end
+
+  def unscramble(swap = {:swap_position, _, _}, list) do
+    scramble(swap, list)
+  end
+
+  def unscramble(swap = {:swap_letter, _, _}, list) do
+    scramble(swap, list)
+  end
+
+  def unscramble(reverse = {:reverse_position, _, _}, list) do
+    scramble(reverse, list)
+  end
+
+  def unscramble({:rotate_letter, letter}, list) do
+    unrotated =
+      1..length(list)
+      |> Enum.map(fn times -> rotate(:left, list, times) end)
+      |> Enum.filter(fn original -> scramble({:rotate_letter, letter}, original) == list end)
+
+    # Will the elves be mean to me?
+    if length(unrotated) > 1 do
+      IO.puts "rotating letter #{letter}"
+      IO.inspect list
+      IO.inspect(unrotated)
+      # raise "Ambiguous un-rotation about letter"
+    end
+
+    hd(unrotated)
+  end
+
+  def unscramble({:rotate, "left", amount}, list) do
+    rotate(:right, list, amount)
+  end
+
+  def unscramble({:rotate, "right", amount}, list) do
+    rotate(:left, list, amount)
+  end
+
+  def unscramble({:move_position, from, to}, list) do
+    scramble({:move_position, to, from}, list)
   end
 end

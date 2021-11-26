@@ -3,6 +3,17 @@ defmodule AoC.Day20Test do
 
   import AoC.Day21Scramble
 
+  @example """
+  swap position 4 with position 0
+  swap letter d with letter b
+  reverse positions 0 through 4
+  rotate left 1 step
+  move position 1 to position 4
+  move position 3 to position 0
+  rotate based on position of letter b
+  rotate based on position of letter d
+  """
+
   test "scramblers" do
     assert scrambled({:swap_position, 1, 4}, "elixir") == "eiixlr"
     assert scrambled({:rotate, "right", 4}, "elixir") == "ixirel"
@@ -25,16 +36,11 @@ defmodule AoC.Day20Test do
   end
 
   test "scramble" do
-    assert scramble_string("abcde", """
-    swap position 4 with position 0
-    swap letter d with letter b
-    reverse positions 0 through 4
-    rotate left 1 step
-    move position 1 to position 4
-    move position 3 to position 0
-    rotate based on position of letter b
-    rotate based on position of letter d
-    """) == "decab"
+    assert scramble_string("abcde", @example) == "decab"
+  end
+
+  test "unscramble" do
+    assert unscramble_string("decab", @example) == "abcde"
   end
 
   defp scrambled(instruction, string) do

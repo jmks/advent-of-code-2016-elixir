@@ -73,6 +73,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(20, 2, input), do: AoC.Day20Firewall.ips_allowed(input, 4294967295)
 
   defp solve(21, 1, input), do: AoC.Day21Scramble.scramble_string("abcdefgh", input)
+  defp solve(21, 2, input), do: AoC.Day21Scramble.unscramble_string("fbgdceah", input)
 
   defp solve(_, _, _input), do: "not implemented!"
 end
