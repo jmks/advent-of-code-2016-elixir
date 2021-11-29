@@ -77,5 +77,7 @@ defmodule Mix.Tasks.Solve do
 
   defp solve(22, 1, input), do: AoC.Day22Grid.count_viable_pairs(input)
 
+  defp solve(23, 1, input), do: AoC.Day23Safe.safe_value(input, a: 7)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
