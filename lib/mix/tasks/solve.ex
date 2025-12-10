@@ -80,5 +80,7 @@ defmodule Mix.Tasks.Solve do
   defp solve(23, 1, input), do: AoC.Day23Safe.safe_value(input, a: 7)
   defp solve(23, 2, input), do: AoC.Day23Safe.safe_value(input, a: 12)
 
+  defp solve(24, 1, input), do: AoC.Day24Spurlunking.fewest_steps(input)
+
   defp solve(_, _, _input), do: "not implemented!"
 end
